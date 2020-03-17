@@ -1,0 +1,57 @@
+reading points
+LoadData Done
+dim: 128 n_total: 1000000
+ReadData Done! dataset size: 1000000
+1000000 points read
+normalizing points
+done
+selecting 10 queries
+gen queries id: 
+the 0th query id is 242289
+the 1th query id is 1740
+the 2th query id is 355063
+the 3th query id is 342224
+the 4th query id is 687160
+the 5th query id is 881241
+the 6th query id is 167660
+the 7th query id is 406996
+the 8th query id is 177673
+the 9th query id is 494412
+done
+running linear scan (to generate nearest neighbors)
+Brute Force scan done in 0.237125 secs.
+0.0237125 s per query
+re-centering
+Re-centering done
+before build index, params.last_cp_dim: 2
+building the index based on the cross-polytope LSH
+Build Index done
+construction time: 6.07886
+after build index, params.last_cp_dim: 2
+the 0th query answer is: 
+242289 242673 242089 242605 470539 
+the 1th query answer is: 
+1740 166342 490823 318957 105332 
+the 2th query answer is: 
+355063 338618 354016 327745 458941 
+the 3th query answer is: 
+342224 358971 341155 342993 312546 
+the 4th query answer is: 
+687160 220043 752223 381549 506307 
+the 5th query answer is: 
+881241 880903 455484 187682 187779 
+the 6th query answer is: 
+167660 138316 168064 722848 334786 
+the 7th query answer is: 
+406996 406672 406593 54836 99714 
+the 8th query answer is: 
+177673 178392 516095 177438 200142 
+the 9th query answer is: 
+494412 495137 888353 727822 514737 
+average total query time: 0.00326915
+average lsh time: 3.49971e-05
+average hash table time: 0.00100388
+average distance time: 0.00223004
+average number of candidates: 35263.9
+average number of unique candidates: 27567.1
+score: 1
