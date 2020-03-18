@@ -126,7 +126,8 @@ class StaticLSHTable
     void get_candidates_with_duplicates(const PointType& p,
                                         int_fast64_t num_probes,
                                         int_fast64_t max_num_candidates,
-                                        std::vector<KeyType>* result) {
+                                        std::vector<KeyType>* result,
+                                        faiss::ConcurrentBitsetPtr bitset = nullptr) {
       if (result == nullptr) {
         throw LSHTableError("Results vector pointer is nullptr.");
       }
@@ -180,7 +181,8 @@ class StaticLSHTable
 
     void get_unique_candidates(const PointType& p, int_fast64_t num_probes,
                                int_fast64_t max_num_candidates,
-                               std::vector<KeyType>* result) {
+                               std::vector<KeyType>* result,
+                               faiss::ConcurrentBitsetPtr bitset = nullptr) {
       if (result == nullptr) {
         throw LSHTableError("Results vector pointer is nullptr.");
       }
@@ -188,7 +190,7 @@ class StaticLSHTable
       auto start_time = std::chrono::high_resolution_clock::now();
       stats_.num_queries += 1;
 
-      get_unique_candidates_internal(p, num_probes, max_num_candidates, result);
+      get_unique_candidates_internal(p, num_probes, max_num_candidates, result, bitset);
 
       auto end_time = std::chrono::high_resolution_clock::now();
       auto elapsed_total =
@@ -222,7 +224,8 @@ class StaticLSHTable
     void get_unique_candidates_internal(const PointType& p,
                                         int_fast64_t num_probes,
                                         int_fast64_t max_num_candidates,
-                                        std::vector<KeyType>* result) {
+                                        std::vector<KeyType>* result,
+                                        faiss::ConcurrentBitsetPtr bitset = nullptr) {
       auto start_time = std::chrono::high_resolution_clock::now();
 
       lsh_query_.get_probes_by_table(p, &tmp_probes_by_table_, num_probes);
@@ -244,11 +247,12 @@ class StaticLSHTable
       }
       while (num_candidates < max_num_candidates &&
              hash_table_iterators_.first != hash_table_iterators_.second) {
-        num_candidates += 1;
         int_fast64_t cur = *(hash_table_iterators_.first);
-        if (is_candidate_[cur] != query_counter_) {
-          is_candidate_[cur] = query_counter_;
-          result->push_back(cur);
+        if (is_candidate_[cur] != query_counter_ &&
+            (bitset == nullptr || !bitset->test((faiss::ConcurrentBitset::id_type_t)cur))) {
+            is_candidate_[cur] = query_counter_;
+            result->push_back(cur);
+            num_candidates += 1;
         }
 
         ++hash_table_iterators_.first;

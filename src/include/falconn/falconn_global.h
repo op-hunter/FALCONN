@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <Eigen/Dense>
+#include "utils/ConcurrentBitset.h"
 
 namespace falconn {
 

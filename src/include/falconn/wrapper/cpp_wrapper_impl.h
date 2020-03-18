@@ -301,21 +301,21 @@ class LSHNNQueryWrapper : public LSHNearestNeighborQuery<PointType, KeyType> {
         new NNQueryType(internal_query_.get(), data_storage));
   }
 
-  KeyType find_nearest_neighbor(const PointType& q) {
+  KeyType find_nearest_neighbor(const PointType& q, faiss::ConcurrentBitsetPtr bitset = nullptr) {
     return internal_nn_query_->find_nearest_neighbor(q, q, num_probes_,
-                                                     max_num_candidates_);
+                                                     max_num_candidates_, bitset);
   }
 
   void find_k_nearest_neighbors(const PointType& q, int_fast64_t k,
-                                std::vector<KeyType>* result) {
+                                std::vector<KeyType>* result, faiss::ConcurrentBitsetPtr bitset = nullptr) {
     internal_nn_query_->find_k_nearest_neighbors(q, q, k, num_probes_,
-                                                 max_num_candidates_, result);
+                                                 max_num_candidates_, result, bitset);
   }
 
   void find_near_neighbors(const PointType& q, DistanceType threshold,
-                           std::vector<KeyType>* result) {
+                           std::vector<KeyType>* result, faiss::ConcurrentBitsetPtr bitset = nullptr) {
     internal_nn_query_->find_near_neighbors(q, q, threshold, num_probes_,
-                                            max_num_candidates_, result);
+                                            max_num_candidates_, result, bitset);
   }
 
   void get_candidates_with_duplicates(const PointType& q,
@@ -398,27 +398,27 @@ class LSHNNQueryPool : public LSHNearestNeighborQueryPool<PointType, KeyType> {
     }
   }
 
-  KeyType find_nearest_neighbor(const PointType& q) {
+  KeyType find_nearest_neighbor(const PointType& q, faiss::ConcurrentBitsetPtr bitset = nullptr) {
     int_fast32_t query_index = get_query_index_and_lock();
     KeyType res = internal_nn_queries_[query_index]->find_nearest_neighbor(
-        q, q, num_probes_, max_num_candidates_);
+        q, q, num_probes_, max_num_candidates_, bitset);
     unlock_query(query_index);
     return res;
   }
 
   void find_k_nearest_neighbors(const PointType& q, int_fast64_t k,
-                                std::vector<KeyType>* result) {
+                                std::vector<KeyType>* result, faiss::ConcurrentBitsetPtr bitset = nullptr) {
     int_fast32_t query_index = get_query_index_and_lock();
     internal_nn_queries_[query_index]->find_k_nearest_neighbors(
-        q, q, k, num_probes_, max_num_candidates_, result);
+        q, q, k, num_probes_, max_num_candidates_, result, bitset);
     unlock_query(query_index);
   }
 
   void find_near_neighbors(const PointType& q, DistanceType threshold,
-                           std::vector<KeyType>* result) {
+                           std::vector<KeyType>* result, faiss::ConcurrentBitsetPtr bitset = nullptr) {
     int_fast32_t query_index = get_query_index_and_lock();
     internal_nn_queries_[query_index]->find_near_neighbors(
-        q, q, threshold, num_probes_, max_num_candidates_, result);
+        q, q, threshold, num_probes_, max_num_candidates_, result, bitset);
     unlock_query(query_index);
   }
 

@@ -60,14 +60,14 @@ class LSHNearestNeighborQuery {
   ///
   /// Finds the key of the closest candidate in the probing sequence for q.
   ///
-  virtual KeyType find_nearest_neighbor(const PointType& q) = 0;
+  virtual KeyType find_nearest_neighbor(const PointType& q, faiss::ConcurrentBitsetPtr bitset = nullptr) = 0;
 
   ///
   /// Find the keys of the k closest candidates in the probing sequence for q.
   /// The keys are returned in order of increasing distance to q.
   ///
   virtual void find_k_nearest_neighbors(const PointType& q, int_fast64_t k,
-                                        std::vector<KeyType>* result) = 0;
+                                        std::vector<KeyType>* result, faiss::ConcurrentBitsetPtr bitset = nullptr) = 0;
 
   ///
   /// Returns the keys corresponding to candidates in the probing sequence for q
@@ -76,7 +76,7 @@ class LSHNearestNeighborQuery {
   virtual void find_near_neighbors(
       const PointType& q,
       typename PointTypeTraits<PointType>::ScalarType threshold,
-      std::vector<KeyType>* result) = 0;
+      std::vector<KeyType>* result, faiss::ConcurrentBitsetPtr bitset = nullptr) = 0;
 
   ///
   /// Returns the keys of all candidates in the probing sequence for q.
@@ -147,14 +147,14 @@ class LSHNearestNeighborQueryPool {
   ///
   /// Finds the key of the closest candidate in the probing sequence for q.
   ///
-  virtual KeyType find_nearest_neighbor(const PointType& q) = 0;
+  virtual KeyType find_nearest_neighbor(const PointType& q, faiss::ConcurrentBitsetPtr bitset = nullptr) = 0;
 
   ///
   /// Find the keys of the k closest candidates in the probing sequence for q.
   /// See the documentation for LSHNearestNeighborQuery.
   ///
   virtual void find_k_nearest_neighbors(const PointType& q, int_fast64_t k,
-                                        std::vector<KeyType>* result) = 0;
+                                        std::vector<KeyType>* result, faiss::ConcurrentBitsetPtr bitset = nullptr) = 0;
 
   ///
   /// Returns the keys corresponding to candidates in the probing sequence for q
@@ -163,7 +163,7 @@ class LSHNearestNeighborQueryPool {
   virtual void find_near_neighbors(
       const PointType& q,
       typename PointTypeTraits<PointType>::ScalarType threshold,
-      std::vector<KeyType>* result) = 0;
+      std::vector<KeyType>* result, faiss::ConcurrentBitsetPtr bitset = nullptr) = 0;
 
   ///
   /// Returns the keys of all candidates in the probing sequence for q.

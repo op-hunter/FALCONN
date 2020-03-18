@@ -34,11 +34,12 @@ class NearestNeighborQuery {
   LSHTableKeyType find_nearest_neighbor(const LSHTablePointType& q,
                                         const ComparisonPointType& q_comp,
                                         int_fast64_t num_probes,
-                                        int_fast64_t max_num_candidates) {
+                                        int_fast64_t max_num_candidates,
+                                        faiss::ConcurrentBitsetPtr bitset = nullptr) {
     auto start_time = std::chrono::high_resolution_clock::now();
 
     table_query_->get_unique_candidates(q, num_probes, max_num_candidates,
-                                        &candidates_);
+                                        &candidates_, bitset);
     auto distance_start_time = std::chrono::high_resolution_clock::now();
 
     // TODO: use nullptr for pointer types
@@ -83,7 +84,8 @@ class NearestNeighborQuery {
                                 const ComparisonPointType& q_comp,
                                 int_fast64_t k, int_fast64_t num_probes,
                                 int_fast64_t max_num_candidates,
-                                std::vector<LSHTableKeyType>* result) {
+                                std::vector<LSHTableKeyType>* result,
+                                faiss::ConcurrentBitsetPtr bitset = nullptr) {
     if (result == nullptr) {
       throw NearestNeighborQueryError("Results vector pointer is nullptr.");
     }
@@ -94,7 +96,7 @@ class NearestNeighborQuery {
     res.clear();
 
     table_query_->get_unique_candidates(q, num_probes, max_num_candidates,
-                                        &candidates_);
+                                        &candidates_, bitset);
 
     heap_.reset();
     heap_.resize(k);
@@ -147,7 +149,8 @@ class NearestNeighborQuery {
                            const ComparisonPointType& q_comp,
                            DistanceType threshold, int_fast64_t num_probes,
                            int_fast64_t max_num_candidates,
-                           std::vector<LSHTableKeyType>* result) {
+                           std::vector<LSHTableKeyType>* result,
+                           faiss::ConcurrentBitsetPtr bitset = nullptr) {
     if (result == nullptr) {
       throw NearestNeighborQueryError("Results vector pointer is nullptr.");
     }
@@ -158,7 +161,7 @@ class NearestNeighborQuery {
     res.clear();
 
     table_query_->get_unique_candidates(q, num_probes, max_num_candidates,
-                                        &candidates_);
+                                        &candidates_, bitset);
     auto distance_start_time = std::chrono::high_resolution_clock::now();
 
     typename DataStorage::SubsequenceIterator iter =
